@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Global Think - AI Code & HTML, CSS, JS</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A good way to get the best..">
+    <meta name="keywords" content="AI coding, AI code editor, HTML generator, CSS ai, JavaScript">
+    <meta name="author" content="Olawale Abdul-Ganiyu">
+
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Global Think - Generative AI Web Editor & Playground">
+    <meta property="og:description" content="Generate web designs instantly with Global Think's AI coding assistant. The ultimate real-time editor for HTML, CSS, and JavaScript.">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Global Think AI Editor",
+      "operatingSystem": "Web-based",
+      "applicationCategory": "DeveloperApplication",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "description": "A generative AI-powered web development environment for writing HTML, CSS, and JavaScript. Features include context-aware AI code generation, real-time preview, and vector graphics tools.",
+      "featureList": "Generative AI Code Assistant, Real-time HTML/CSS/JavaScript Preview, Vector Graphics Editor, CSS Explorer, Multi-Format Converter",
+      "softwareHelp": "https://globalthink.com/about/index.html",
+      "author": {
+          "@type": "Organization",
+          "name": "Global Think"
+      }
+    }
+    </script>
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="expires" content="-1">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/alertify.core.css" />
+    <link rel="stylesheet" href="css/alertify.default.css" />
+    <link rel="stylesheet" href="css/alertify.bootstrap.css" />
+    <link rel="shortcut icon" href="https://www.google.com/s2/favicons?domain=google.com" />
+    
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/split.js/1.6.2/split.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,300,000,-25" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&family=Ubuntu:wght@300;400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/editor/editor.main.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
+
+    <style>
+        /* Global Variables */
+        :root {
+            --primary-color: #0078d4;
+            --accent-color: #00bfff;
+            --main-bg: #1e1e1e;
+            --editor-bg: #252526;
+            --text-color: #d4d4d4;
+            --border-color: #3c3c3c;
+            --hover-bg: #2d2d2d;
+            --success-color: #4ec9b0;
+            --warning-color: #dcdcaa;
+            --error-color: #f44747;
+        }
+
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--main-bg);
+            color: var(--text-color);
+            overflow: hidden;
+            font-size: 14px;
+        }
+
+        /* Loader Animation */
+        .loader {
+            height: 45px;
+            --c: no-repeat linear-gradient(#0195c1 0 0);
+            background: var(--c) left, var(--c) center, var(--c) right;
+            background-size: 16px 100%;
+            animation: l33-1 1.5s infinite, l33-2 1.5s infinite;
+        }
+
+        @keyframes l33-1 {
+            0%,100% { width: 45px }
+            35%,65% { width: 65px }
+        }
+
+        @keyframes l33-2 {
+            0%,40% { transform: rotate(0) }
+            60%,100% { transform: rotate(90deg) }
+        }
+
+        /* Splash Screen */
+        #splashscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--main-bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .load-container {
+            text-align: center;
+        }
+
+        .load-container span {
+            color: #777;
+            font-size: 32px;
+        }
+
+        /* Header Navigation */
+        .drop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            background: #333333;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .drop_menu {
+            list-style: none;
+            display: flex;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+        }
+
+        .drop_menu > li {
+            position: relative;
+            margin: 0 5px;
+        }
+
+        .drop_menu > li > a {
+            color: #ccc;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            transition: background 0.2s;
+            font-size: 13px;
+        }
+
+        .drop_menu > li > a:hover {
+            background: var(--hover-bg);
+            color: white;
+        }
+
+        .drop_menu .material-symbols-outlined {
+            font-size: 18px;
+            margin-right: 5px;
+        }
+
+        .icon-dropdown {
+            margin-left: 5px;
+            font-size: 16px !important;
+        }
+
+        .icon-label {
+            font-size: 13px;
+        }
+
+        /* Sub Menus */
+        .sub-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: #2d2d2d;
+            min-width: 200px;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            display: none;
+            flex-direction: column;
+            border: 1px solid var(--border-color);
+            z-index: 1001;
+        }
+
+        .drop_menu > li:hover > .sub-menu {
+            display: flex;
+        }
+
+        .sub-menu > li {
+            padding: 0;
+        }
+
+        .sub-menu > li > a {
+            color: #ccc;
+            text-decoration: none;
+            padding: 10px 15px;
+            display: block;
+            transition: background 0.2s;
+        }
+
+        .sub-menu > li > a:hover {
+            background: var(--hover-bg);
+            color: white;
+        }
+
+        .sub-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Library Menu */
+        .sub-menu[style*="height: 400px"] {
+            padding: 15px;
+            gap: 10px;
+        }
+
+        .sub-menu[style*="height: 400px"] li {
+            flex: 0 0 calc(33.333% - 7px);
+        }
+
+        .sub-menu[style*="height: 400px"] a {
+            background: var(--editor-bg);
+            border-radius: 4px;
+            text-align: center;
+            padding: 8px;
+        }
+
+        .list-label {
+            font-weight: bold;
+            color: var(--accent-color);
+            margin-right: 5px;
+        }
+
+        /* Buttons */
+        .btn-submit {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 6px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background 0.2s;
+        }
+
+        .btn-submit:hover {
+            background: #106ebe;
+        }
+
+        /* Settings Toggles */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #555;
+            transition: .4s;
+            border-radius: 20px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--accent-color);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+
+        /* Range Slider */
+        .range-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+        }
+
+        .range {
+            flex: 1;
+            height: 5px;
+            -webkit-appearance: none;
+            background: #555;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        .range::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 15px;
+            height: 15px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        /* Editor Layout */
+        .split {
+            overflow: hidden;
+        }
+
+        .split-horizontal {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        .split.content {
+            position: relative;
+            background: var(--editor-bg);
+            border: 1px solid var(--border-color);
+        }
+
+        #a, #b {
+            display: flex;
+            flex-direction: column;
+            height: 50%;
+        }
+
+        .lang-logo {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            opacity: 0.1;
+            z-index: 5;
+        }
+
+        /* Monaco Editor Containers */
+        #html-editor, #css-editor, #js-editor {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Preview Frame */
+        #preview {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: white;
+        }
+
+        /* Browser Preview Controls */
+        .browser-controls {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .browser-controls input {
+            flex: 1;
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            outline: none;
+            font-size: 13px;
+        }
+
+        .browser-controls input:focus {
+            border-color: var(--primary-color);
+        }
+
+        .browser-btn {
+            background: none;
+            border: none;
+            padding: 5px;
+            cursor: pointer;
+            color: #555;
+            border-radius: 50%;
+            transition: background 0.2s;
+        }
+
+        .browser-btn:hover {
+            background: rgba(0,0,0,0.1);
+        }
+
+        /* Footer */
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 30px;
+            background: #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            z-index: 1000;
+        }
+
+        .footer ul {
+            display: flex;
+            list-style: none;
+            gap: 15px;
+            margin: 0;
+        }
+
+        .footer ul li a {
+            color: #888;
+            text-decoration: none;
+            font-size: 12px;
+            transition: color 0.2s;
+        }
+
+        .footer ul li a:hover {
+            color: var(--accent-color);
+        }
+
+        #btn-liveweave-ai-open {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: transform 0.2s;
+        }
+
+        #btn-liveweave-ai-open:hover {
+            transform: scale(1.05);
+        }
+
+        /* AI Chat Panel */
+        .footer-message {
+            position: fixed;
+            bottom: 30px;
+            right: 0;
+            width: 350px;
+            height: 500px;
+            background: var(--editor-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px 8px 0 0;
+            box-shadow: -5px -5px 15px rgba(0,0,0,0.3);
+            z-index: 1002;
+            display: none;
+        }
+
+        .footer-message.active {
+            display: block;
+        }
+
+        #btn-liveweave-ai-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            font-size: 16px;
+            z-index: 10;
+        }
+
+        #aiChatIframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--editor-bg);
+            border-radius: 8px;
+            padding: 20px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-header h2 {
+            font-size: 20px;
+            color: var(--accent-color);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: none;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #106ebe;
+        }
+
+        .btn-secondary {
+            background: #555;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #666;
+        }
+
+        /* Converter Options */
+        .converter-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .converter-option {
+            background: var(--main-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .converter-option:hover {
+            border-color: var(--accent-color);
+            transform: translateY(-2px);
+        }
+
+        .converter-option.selected {
+            border-color: var(--accent-color);
+            background: rgba(0, 191, 255, 0.1);
+        }
+
+        .converter-option i {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: var(--accent-color);
+        }
+
+        .converter-option h3 {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .converter-option p {
+            font-size: 11px;
+            color: #888;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 13px;
+            color: #888;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 8px 12px;
+            background: var(--main-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-color);
+            font-size: 13px;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            color: #888;
+            font-size: 13px;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .tab:hover {
+            color: var(--text-color);
+        }
+
+        .tab.active {
+            color: var(--accent-color);
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--accent-color);
+        }
+
+        /* Owner Badge */
+        .owner-badge {
+            position: fixed;
+            bottom: 35px;
+            left: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            z-index: 999;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .owner-badge i {
+            margin-right: 5px;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            position: fixed;
+            top: 40px;
+            left: 0;
+            width: 100%;
+            height: 25px;
+            background: #007acc;
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            font-size: 12px;
+            z-index: 999;
+        }
+
+        .status-bar .status-item {
+            margin-right: 20px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .drop_menu > li > a {
+                padding: 6px 8px;
+            }
+
+            .icon-label {
+                display: none;
+            }
+
+            .footer-message {
+                width: 300px;
+                height: 400px;
+            }
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            top: 60px;
+            right: 20px;
+            background: var(--primary-color);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 4px;
+            z-index: 10001;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .toast.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10002;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .loading-content {
+            text-align: center;
+        }
+
+        .loading-content .loader {
+            margin: 0 auto;
+        }
+
+        .loading-content p {
+            margin-top: 15px;
+            color: var(--accent-color);
+        }
+    </style>
+<script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
+</head>
+
+<body>
+    <h1 style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;">
+        Global Think: Generative AI Web Editor & HTML/CSS/JS Playground
+    </h1>
+
+    <!-- Splash Screen -->
+    <div id="splashscreen">
+        <div class="load-container">
+            <div style="padding-bottom: 20px;">
+                <span style="color: #777; font-size: 32px;">Initializing Global Think</span>
+            </div>
+            <div class="loader"></div>
+        </div>
+    </div>
+
+    <!-- Navigation Menu -->
+    <div class="drop">
+        <ul class="drop_menu">
+            <li>
+                <a href="#">
+                    <span class="material-symbols-outlined">code</span>
+                    <span class="icon-label">Global Think <span class="editor-mode">Web</span></span>
+                    <span class="material-symbols-outlined icon-dropdown">expand_more</span>
+                </a>
+                <ul class="sub-menu">
+                    <li id="home"><a href="#" class="medium">
+                        <span class="sub-menu-item">
+                            <span class="material-symbols-outlined">home</span>
+                            <span class="icon-label">Home</span>
+                        </span>
+                    </a></li>
+                    <li id="new-project"><a href="#" class="medium">
+                        <span class="sub-menu-item">
+                            <span class="material-symbols-outlined">add_circle</span>
+                            <span class="icon-label">New Project</span>
+                        </span>
+                    </a></li>
+                    <li id="cover-page"><a href="#" class="medium">
+                        <span class="sub-menu-item">
+                            <span class="material-symbols-outlined">image</span>
+                            <span class="icon-label">Cover Page Generator</span>
+                        </span>
+                    </a></li>
+                </ul>
+            </li>
+
+            <li>
+                <a href="#">
+                    <span class="material-symbols-outlined">build</span>
+                    <span class="icon-label">Tools</span>
+                    <span class="material-symbols-outlined icon-dropdown">expand_more</span>
+                </a>
+                <ul class="sub-menu">
+                    <li id="format-html"><a href="#" class="medium">
+                        <span class="sub-menu-item">
+                            <span class="material-symbols-outlined">code</span>
+                            <span class="icon-label">Format HTML</span>
+                        </span>
+                    </a></li>
+                    <li id="format-css"><a href="#" class="medium">
+                        <span class="sub-menu-item">
+                            <span class="material-symbols-outlined">code_blocks</span>
+                            <span class="icon-label">Format CSS</span>
+                        </span>
+                    </a></li>
+                    <li id="format-js"><a href="#" class="medium">
+                        <span class="sub-menu-item">
+                            <span class="material-symbols-outlined">data_object</span>
+                            <span class="icon-label">Format JavaScript</span>
+                        </span>
+                    </a></li>
+                    <li id="ai-generate"><a href="#" class="medium">
+                        <span class="sub-menu-item">
+                            <span class="material-symbols-outlined">auto_awesome</span>
+                            <span class="icon-label">AI Generate Code</span>
+                        </span>
+                    </a></li>
+                </ul>
+            </li>
+
+            <li>
+                <a href="#">
+                    <span class="material-symbols-outlined">transform</span>
+                    <span class="icon-label">Converter</span>
+                    <span class="material-symbols-outlined icon-dropdown">expand_more</span>
+                </a>
+                <ul class="sub-menu">
+                    <li id="convert-web"><a href="#" class="medium">
+                        <span class="sub-menu-item">
+                            <span class="material-symbols-outlined">language</span>
+                            <span class="icon-label">Convert to Web</span>
+                        </span>
+                    </a></li>
+                    <li id="convert-exe"><a href="#" class="medium">
+                        <span class="sub-menu-item">
+                            <span class="material-symbols-outlined">desktop_windows</span>
+                            <span class="icon-label">Convert to EXE</span>
+                        </span>
+                    </a></li>
+                    <li id="convert-apk"><a href="#" class="medium">
+                        <span class="sub-menu-item">
+                            <span class="material-symbols-outlined">android</span>
+                            <span class="icon-label">Convert to APK</span>
+                        </span>
+                    </a></li>
+                    <li id="convert-ios"><a href="#" class="medium">
+                        <span class="sub-menu-item">
+                            <span class="material-symbols-outlined">phone_iphone</span>
+                            <span class="icon-label">Convert to iOS</span>
+                        </span>
+                    </a></li>
+                    <li id="convert-python"><a href="#" class="medium">
+                        <span class="sub-menu-item">
+                            <span class="material-symbols-outlined">description</span>
+                            <span class="icon-label">Python Script Generator</span>
+                        </span>
+                    </a></li>
+                </ul>
+            </li>
+
+            <li>
+                <a href="#">
+                    <span class="material-symbols-outlined">cloud</span>
+                    <span class="icon-label">Cloud & Deploy</span>
+                    <span class="material-symbols-outlined icon-dropdown">expand_more</span>
+                </a>
+                <ul class="sub-menu">
+                    <li id="cloud-upload"><a href="#" class="medium">
+                        <span class="sub-menu-item">
+                            <span class="material-symbols-outlined">cloud_upload</span>
+                            <span class="icon-label">Upload to Cloud</span>
+                        </span>
+                    </a></li>
+                    <li id="deploy-web"><a href="#" class="medium">
+                        <span class="sub-menu-item">
+                            <span class="material-symbols-outlined">rocket_launch</span>
+                            <span class="icon-label">Deploy to Web</span>
+                        </span>
+                    </a></li>
+                    <li id="review-project"><a href="#" class="medium">
+                        <span class="sub-menu-item">
+                            <span class="material-symbols-outlined">rate_review</span>
+                            <span class="icon-label">Review Project</span>
+                        </span>
+                    </a></li>
+                </ul>
+            </li>
+
+            <li>
+                <a href="#">
+                    <span class="material-symbols-outlined">download</span>
+                    <span class="icon-label">Download</span>
+                    <span class="material-symbols-outlined icon-dropdown">expand_more</span>
+                </a>
+                <ul class="sub-menu">
+                    <li id="download-html"><a href="#" class="medium">
+                        <span class="sub-menu-item">
+                            <span class="material-symbols-outlined">web</span>
+                            <span class="icon-label">Download HTML</span>
+                        </span>
+                    </a></li>
+                    <li id="download-zip"><a href="#" class="medium">
+                        <span class="sub-menu-item">
+                            <span class="material-symbols-outlined">folder_zip</span>
+                            <span class="icon-label">Download ZIP</span>
+                        </span>
+                    </a></li>
+                    <li id="import-code"><a href="#" class="medium">
+                        <span class="sub-menu-item">
+                            <span class="material-symbols-outlined">upload_file</span>
+                            <span class="icon-label">Import Code</span>
+                        </span>
+                    </a></li>
+                    <li id="export-code"><a href="#" class="medium">
+                        <span class="sub-menu-item">
+                            <span class="material-symbols-outlined">download_file</span>
+                            <span class="icon-label">Export Code</span>
+                        </span>
+                    </a></li>
+                </ul>
+            </li>
+
+            <li>
+                <a href="#">
+                    <span class="material-symbols-outlined">developer_mode</span>
+                    <span class="icon-label">Developer</span>
+                    <span class="material-symbols-outlined icon-dropdown">expand_more</span>
+                </a>
+                <ul class="sub-menu">
+                    <li id="python-installer"><a href="#" class="medium">
+                        <span class="sub-menu-item">
+                            <span class="material-symbols-outlined">terminal</span>
+                            <span class="icon-label">Python Installer</span>
+                        </span>
+                    </a></li>
+                    <li id="console-output"><a href="#" class="medium">
+                        <span class="sub-menu-item">
+                            <span class="material-symbols-outlined">terminal</span>
+                            <span class="icon-label">Console Output</span>
+                        </span>
+                    </a></li>
+                    <li id="extract-folder"><a href="#" class="medium">
+                        <span class="sub-menu-item">
+                            <span class="material-symbols-outlined">folder_open</span>
+                            <span class="icon-label">Extract Folder</span>
+                        </span>
+                    </a></li>
+                </ul>
+            </li>
+
+            <li class="align-right">
+                <a href="#">
+                    <span class="material-symbols-outlined">settings</span>
+                    <span class="icon-label">Settings</span>
+                    <span class="material-symbols-outlined icon-dropdown">expand_more</span>
+                </a>
+                <ul class="sub-menu">
+                    <li>
+                        <a>
+                            <div class="range-container">
+                                <input type="range" min="10" max="24" value="14" class="range" id="range-font-size">
+                                <span><span id="current-font-size">14</span><span style="font-size: 80%">px</span></span>
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="no-select">
+                            <label class="switch">
+                                <input type="checkbox" checked id="chk-live-mode">
+                                <span class="slider round"></span>
+                            </label>
+                            &nbsp; Live mode
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="no-select">
+                            <label class="switch">
+                                <input type="checkbox" checked id="chk-theme">
+                                <span class="slider round"></span>
+                            </label>
+                            &nbsp; Dark mode
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="no-select">
+                            <label class="switch">
+                                <input type="checkbox" checked id="chk-line-number">
+                                <span class="slider round"></span>
+                            </label>
+                            &nbsp; Line number
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="no-select">
+                            <label class="switch">
+                                <input type="checkbox" id="chk-mini-map">
+                                <span class="slider round"></span>
+                            </label>
+                            &nbsp; Mini map
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+            <li class="align-right" id="run">
+                <a href="#">
+                    <span class="material-symbols-outlined">play_arrow</span>
+                    <span class="icon-label">Run</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+        <span class="status-item"><i class="fas fa-circle" style="color: #4ec9b0; margin-right: 5px;"></i> Ready</span>
+        <span class="status-item" id="status-mode">Mode: Web Development</span>
+        <span class="status-item" id="status-network">Network: Online</span>
+    </div>
+
+    <!-- Editor Layout -->
+    <div style="position: fixed; top: 65px; left: 0; width: 100%; height: calc(100% - 95px); overflow: hidden; background: var(--main-bg); z-index: 0;">
+        <div id="a" class="split split-horizontal">
+            <div id="html" class="split content">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23e34c26'%3E%3Cpath d='M1.5 0h21l-1.91 21.563L11.977 24l-8.565-2.438L1.5 0zm7.031 9.75l-.232-2.718 10.059.003.23-2.622L5.412 4.41l.698 8.01h9.126l-.326 3.426-2.91.804-2.955-.81-.188-2.11H6.248l.33 4.171L12 19.351l5.379-1.443.744-8.157H8.531z'/%3E%3C/svg%3E" style="height: 30px;" class="lang-logo" alt="HTML">
+                <div id="html-editor"></div>
+            </div>
+            <div id="css" class="split content">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231572b6'%3E%3Cpath d='M1.5 0h21l-1.91 21.563L11.977 24l-8.564-2.438L1.5 0zm17.09 4.413L5.41 4.41l.213 2.622 10.125.002-.255 2.716h-6.64l.24 2.573h6.182l-.366 3.523-2.91.804-2.956-.81-.188-2.11h-2.61l.29 3.855L12 19.288l5.373-1.53L18.59 4.414z'/%3E%3C/svg%3E" style="height: 30px;" class="lang-logo" alt="CSS">
+                <div id="css-editor"></div>
+            </div>
+        </div>
+        <div id="b" class="split split-horizontal">
+            <div id="js" class="split content">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23f7df1e'%3E%3Cpath d='M0 0h24v24H0V0zm22.034 18.276c-.175-1.095-.888-2.015-3.003-2.873-.736-.345-1.554-.585-1.797-1.14-.091-.33-.105-.51-.046-.705.15-.646.915-.84 1.515-.66.39.12.75.42.976.9 1.034-.676 1.034-.676 1.755-1.125-.27-.42-.404-.601-.586-.78-.63-.705-1.469-1.065-2.834-1.034l-.705.089c-.676.165-1.32.525-1.71 1.005-1.14 1.291-.811 3.541.569 4.471 1.365 1.02 3.361 1.244 3.616 2.205.24 1.17-.87 1.545-1.966 1.41-.811-.18-1.26-.586-1.755-1.336l-1.83 1.051c.21.48.45.689.81 1.109 1.74 1.756 6.09 1.666 6.871-1.004.029-.09.24-.705.074-1.65l.046.067zm-8.983-7.245h-2.248c0 1.938-.009 3.864-.009 5.805 0 1.232.063 2.363-.138 2.711-.33.689-1.18.601-1.566.48-.396-.196-.597-.466-.83-.855-.063-.105-.11-.196-.127-.196l-1.825 1.125c.305.63.75 1.172 1.324 1.517.855.51 2.004.675 3.207.405.783-.226 1.458-.691 1.811-1.411.51-.93.402-2.07.397-3.346.012-2.054 0-4.109 0-6.179l.004-.056z'/%3E%3C/svg%3E" style="height: 30px;" class="lang-logo" alt="JavaScript">
+                <div id="js-editor"></div>
+            </div>
+            <div id="preview-container" class="split content">
+                <div class="browser-controls">
+                    <button class="browser-btn" id="browser-back" title="Back">
+                        <span class="material-symbols-outlined" style="font-size: 16px;">arrow_back</span>
+                    </button>
+                    <button class="browser-btn" id="browser-forward" title="Forward">
+                        <span class="material-symbols-outlined" style="font-size: 16px;">arrow_forward</span>
+                    </button>
+                    <button class="browser-btn" id="browser-refresh" title="Refresh">
+                        <span class="material-symbols-outlined" style="font-size: 16px;">refresh</span>
+                    </button>
+                    <button class="browser-btn" id="browser-home" title="Home (Google)">
+                        <span class="material-symbols-outlined" style="font-size: 16px;">home</span>
+                    </button>
+                    <input type="text" id="browser-url" placeholder="Search Google or enter URL" value="">
+                    <button class="browser-btn" id="browser-go" title="Go">
+                        <span class="material-symbols-outlined" style="font-size: 16px;">search</span>
+                    </button>
+                </div>
+                <iframe id="preview" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <ul style="font-size: 12px;">
+            <li><a href="#" target="_blank" title="About">About</a></li>
+            <li><a href="#" target="_blank" title="Blog">Blog</a></li>
+            <li><a href="#" target="_blank" title="Contact">Contact</a></li>
+            <li><a href="#" target="_blank" title="Privacy">Privacy</a></li>
+        </ul>
+        <button id="btn-liveweave-ai-open">
+            <i class="fas fa-wand-magic-sparkles" style="color: #00bfff;"></i>
+            Ask AI Assistant
+        </button>
+    </footer>
+
+    <!-- Owner Badge -->
+    <div class="owner-badge">
+        <i class="fas fa-user-circle"></i>
+        Developed by: Olawale Abdul-Ganiyu
+    </div>
+
+    <!-- AI Chat Panel -->
+    <div class="footer-message" id="footerMessage">
+        <button id="btn-liveweave-ai-close">
+            <i class="fas fa-times"></i>
+        </button>
+        <div style="padding: 15px; border-bottom: 1px solid var(--border-color);">
+            <h3 style="font-size: 14px; color: var(--accent-color);">AI Assistant</h3>
+        </div>
+        <div id="ai-chat-container" style="height: calc(100% - 60px); overflow-y: auto; padding: 15px;">
+            <div style="background: var(--main-bg); padding: 10px; border-radius: 8px; margin-bottom: 10px;">
+                <p style="font-size: 12px; color: #888;">Hello! I'm your AI coding assistant. Ask me anything about HTML, CSS, JavaScript, or web development!</p>
+            </div>
+        </div>
+        <div style="position: absolute; bottom: 0; left: 0; width: 100%; padding: 10px; border-top: 1px solid var(--border-color);">
+            <input type="text" id="ai-input" placeholder="Ask AI anything..." style="width: 100%; padding: 8px; background: var(--main-bg); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-color);">
+        </div>
+    </div>
+
+    <!-- Converter Modal -->
+    <div class="modal" id="converter-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="converter-title">Convert Project</h2>
+                <button class="modal-close" id="converter-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="converter-options" id="converter-options">
+                    <div class="converter-option" data-type="web">
+                        <i class="fas fa-globe"></i>
+                        <h3>Web</h3>
+                        <p>HTML5 Website</p>
+                    </div>
+                    <div class="converter-option" data-type="exe">
+                        <i class="fas fa-desktop"></i>
+                        <h3>EXE</h3>
+                        <p>Windows Application</p>
+                    </div>
+                    <div class="converter-option" data-type="apk">
+                        <i class="fab fa-android"></i>
+                        <h3>APK</h3>
+                        <p>Android App</p>
+                    </div>
+                    <div class="converter-option" data-type="ios">
+                        <i class="fab fa-apple"></i>
+                        <h3>iOS</h3>
+                        <p>iPhone/iPad App</p>
+                    </div>
+                </div>
+                <div id="converter-form" style="display: none; margin-top: 20px;">
+                    <div class="form-group">
+                        <label for="app-name">Application Name</label>
+                        <input type="text" id="app-name" placeholder="My Awesome App">
+                    </div>
+                    <div class="form-group">
+                        <label for="app-version">Version</label>
+                        <input type="text" id="app-version" value="1.0.0">
+                    </div>
+                    <div class="form-group">
+                        <label for="app-description">Description</label>
+                        <textarea id="app-description" rows="3" placeholder="Describe your application..."></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="converter-cancel">Cancel</button>
+                <button class="btn btn-primary" id="converter-convert">Convert</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Python Installer Modal -->
+    <div class="modal" id="python-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Python Script Generator</h2>
+                <button class="modal-close" id="python-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="python-packages">Python Packages (one per line)</label>
+                    <textarea id="python-packages" rows="5" placeholder="numpy&#10;pandas&#10;requests&#10;flask"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="python-script">Python Script</label>
+                    <textarea id="python-script" rows="10" placeholder="# Your Python code here&#10;import numpy as np&#10;import pandas as pd&#10;&#10;# Your application logic"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="python-cancel">Cancel</button>
+                <button class="btn btn-primary" id="python-generate">Generate Script</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cover Page Modal -->
+    <div class="modal" id="cover-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Cover Page Generator</h2>
+                <button class="modal-close" id="cover-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="cover-title">Project Title</label>
+                    <input type="text" id="cover-title" placeholder="My Project">
+                </div>
+                <div class="form-group">
+                    <label for="cover-subtitle">Subtitle</label>
+                    <input type="text" id="cover-subtitle" placeholder="A Web Application">
+                </div>
+                <div class="form-group">
+                    <label for="cover-author">Author</label>
+                    <input type="text" id="cover-author" value="Olawale Abdul-Ganiyu">
+                </div>
+                <div class="form-group">
+                    <label for="cover-theme">Theme</label>
+                    <select id="cover-theme">
+                        <option value="modern">Modern Dark</option>
+                        <option value="light">Clean Light</option>
+                        <option value="gradient">Gradient</option>
+                        <option value="minimal">Minimal</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cover-cancel">Cancel</button>
+                <button class="btn btn-primary" id="cover-generate">Generate Cover</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cloud Upload Modal -->
+    <div class="modal" id="cloud-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Upload to Cloud</h2>
+                <button class="modal-close" id="cloud-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="tabs">
+                    <button class="tab active" data-tab="github">GitHub</button>
+                    <button class="tab" data-tab="gitlab">GitLab</button>
+                    <button class="tab" data-tab="bitbucket">Bitbucket</button>
+                </div>
+                <div class="form-group">
+                    <label for="cloud-provider">Provider</label>
+                    <select id="cloud-provider">
+                        <option value="github">GitHub</option>
+                        <option value="gitlab">GitLab</option>
+                        <option value="bitbucket">Bitbucket</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="cloud-repo">Repository Name</label>
+                    <input type="text" id="cloud-repo" placeholder="my-awesome-project">
+                </div>
+                <div class="form-group">
+                    <label for="cloud-token">Access Token</label>
+                    <input type="password" id="cloud-token" placeholder="Enter your access token">
+                </div>
+                <div class="form-group">
+                    <label for="cloud-description">Description</label>
+                    <textarea id="cloud-description" rows="3" placeholder="Describe your project..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cloud-cancel">Cancel</button>
+                <button class="btn btn-primary" id="cloud-upload-btn">Upload</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import/Export Modal -->
+    <div class="modal" id="import-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="import-title">Import Code</h2>
+                <button class="modal-close" id="import-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="import-file">Select File</label>
+                    <input type="file" id="import-file" accept=".html,.css,.js,.zip,.json">
+                </div>
+                <div class="form-group">
+                    <label for="import-content">Or Paste Code</label>
+                    <textarea id="import-content" rows="10" placeholder="Paste your code here..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="import-cancel">Cancel</button>
+                <button class="btn btn-primary" id="import-import-btn">Import</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-content">
+            <div class="loader"></div>
+            <p id="loading-text">Processing...</p>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
